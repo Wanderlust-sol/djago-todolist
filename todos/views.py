@@ -22,3 +22,18 @@ class TodoList(APIView):
     serializer = self.TodoSerializer(todos, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
   
+class TodoCreate(APIView):
+  class TodoSerializer(ModelSerializer):
+    class Meta:
+      model = Todo
+      fields = [
+        "title",
+      ]
+    
+  def post(self, request):
+    serializer = self.TodoSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    Todo.objects.create(
+      title=serializer.validated_data["title"],
+    )
+    return Response(status=status.HTTP_201_CREATED)
